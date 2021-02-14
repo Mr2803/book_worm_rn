@@ -6,7 +6,6 @@ function getPosition(position) {
   switch (position) {
     case "left":
       return { position: "absolute", left: 20, bottom: 20 };
-
     default:
       return { position: "absolute", right: 20, bottom: 20 };
   }
@@ -20,10 +19,10 @@ const CustomActionButton = ({ children, onPress, style, position }) => {
   );
 };
 
-CustomActionButton.PropTypes = {
+CustomActionButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   children: PropTypes.isRequired,
-  style: PropTypes.object,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
 CustomActionButton.defaultProps = {

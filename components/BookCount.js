@@ -12,7 +12,7 @@ const BookCount = (props) => {
   );
 };
 
-BookCount.PropTypes = {
+BookCount.propTypes = {
   count: PropTypes.number.isRequired,
   title: PropTypes.string,
 };
