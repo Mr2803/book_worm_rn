@@ -21,6 +21,7 @@ import * as firebase from "firebase/app";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import BooksCountContainer from "./redux/containers/BooksCountContainer";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 class App extends React.Component {
   constructor() {
@@ -35,7 +36,9 @@ class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <AppContainer />
+        <ActionSheetProvider>
+          <AppContainer />
+        </ActionSheetProvider>
       </Provider>
     );
   }

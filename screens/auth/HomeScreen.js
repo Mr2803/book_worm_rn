@@ -17,9 +17,13 @@ import ListItem from "../../components/ListItem";
 import * as Animatable from "react-native-animatable";
 import * as firebase from "firebase/app";
 import "firebase/database";
+import "firebase/storage";
 import { connect } from "react-redux";
+import { compose } from "redux";
+import { connectActionSheet } from "@expo/react-native-action-sheet";
 import ListEmptyComponent from "../../components/ListEmptyComponent";
 import Swipeout from "react-native-swipeout";
+import * as ImageHelpers from "../../helpers/imageHelpers";
 
 class HomeScreen extends React.Component {
   constructor() {
@@ -173,6 +177,80 @@ class HomeScreen extends React.Component {
     }
   };
 
+  uploadImage = async (image, selectedBook) => {
+    const ref = firebase
+      .storage()
+      .ref("books")
+      .child(this.state.currentUser.uid)
+      .child(selectedBook.key);
+
+    try {
+      //converting to blob
+      const blob = await ImageHelpers.prepareBlob(image.uri);
+      const snapshot = await ref.put(blob);
+
+      let downloadUrl = await ref.getDownloadURL();
+
+      await firebase
+        .database()
+        .ref("books")
+        .child(this.state.currentUser.uid)
+        .child(selectedBook.key)
+        .update({ image: downloadUrl });
+
+      blob.close();
+
+      return downloadUrl;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  openImageLibrary = async (selectedBook) => {
+    console.log(selectedBook);
+    const result = await ImageHelpers.openImageLibrary();
+
+    if (result) {
+      this.props.toggleIsLoadingBooks(true);
+      const downloadUrl = await this.uploadImage(result, selectedBook);
+      this.props.updateBookImage({ ...selectedBook, uri: downloadUrl });
+      this.props.toggleIsLoadingBooks(false);
+    }
+  };
+  openCamera = async (selectedBook) => {
+    const result = await ImageHelpers.openCamera();
+
+    if (result) {
+      this.props.toggleIsLoadingBooks(true);
+      const downloadUrl = await this.uploadImage(result, selectedBook);
+      this.props.updateBookImage({ ...selectedBook, uri: downloadUrl });
+      this.props.toggleIsLoadingBooks(false);
+    }
+  };
+
+  addBookImage = (selectedBook) => {
+    // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
+    const options = ["Seleziona da Galleria", "Camera", "Chiudi"];
+    const cancelButtonIndex = 2;
+
+    this.props.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      (buttonIndex) => {
+        // Do something here depending on the button index selected
+        if (buttonIndex == 0) {
+          this.openImageLibrary(selectedBook);
+        } else if (buttonIndex == 1) {
+          this.openCamera(selectedBook);
+        } else {
+          console.log("close");
+        }
+      }
+    );
+  };
+
   renderItem = (item, index) => {
     let swipeoutButtons = [
       {
@@ -223,7 +301,12 @@ class HomeScreen extends React.Component {
         autoClose={true}
         style={{ marginHorizontal: 5, marginVertical: 5 }}
       >
-        <ListItem item={item} marginVertical={0}>
+        <ListItem
+          editable={true}
+          item={item}
+          marginVertical={0}
+          onPress={() => this.addBookImage(item)}
+        >
           {item.read && (
             <Ionicons
               style={{ marginRight: 5 }}
@@ -236,6 +319,7 @@ class HomeScreen extends React.Component {
       </Swipeout>
     );
   };
+
   render() {
     console.log("render");
     return (
@@ -349,10 +433,18 @@ const mapDispatchToProps = (dispatch) => {
     toggleIsLoadingBooks: (bool) =>
       dispatch({ type: "TOGGLE_IS_LOADING_BOOKS", payload: bool }),
     deleteBook: (book) => dispatch({ type: "DELETE_BOOK", payload: book }),
+    updateBookImage: (book) => {
+      dispatch({ type: "UPDATE_BOOK_IMAGE", payload: book });
+    },
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+const wrapper = compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  connectActionSheet
+);
+
+export default wrapper(HomeScreen);
 
 const styles = StyleSheet.create({
   container: {
