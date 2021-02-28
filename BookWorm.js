@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import WelcomeScreen from "./screens/public/WelcomeScreen";
 import HomeScreen from "./screens/auth/HomeScreen";
@@ -24,74 +24,51 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { LogBox } from "react-native";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import useAuthenticateUser from "./hooks/useAuthenticateUser";
 
-LogBox.ignoreLogs(["Setting a timer"]);
+export default function BookWormHook() {
+  useAuthenticateUser();
+  const auth = useSelector((state) => state.auth);
+  console.log(auth);
+
+  if (auth.isLoading) {
+    return <SplashScreen />;
+  }
+  return (
+    <NavigationContainer>
+      {!auth.isSignedIn ? (
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: colors.bgMain,
+            },
+            headerTintColor: "white",
+          }}
+        >
+          <Stack.Screen
+            name="WelcomeScreen"
+            options={{ headerShown: false }}
+            component={WelcomeScreen}
+          />
+          <Stack.Screen
+            name="LoginScreen"
+            options={{ headerBackTitleVisible: false }}
+            component={LoginScreen}
+          />
+        </Stack.Navigator>
+      ) : (
+        <ActionSheetProvider>
+          <AppDrawerNavigator />
+        </ActionSheetProvider>
+      )}
+    </NavigationContainer>
+  );
+}
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
-
-class BookWorm extends Component {
-  componentDidMount() {
-    this.checkIfLoggedIn();
-  }
-
-  checkIfLoggedIn = () => {
-    let unsubscribe;
-    try {
-      unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          // sign the user in
-          this.props.signIn(user);
-        } else {
-          console.log("no user signed in");
-          //signout
-          this.props.signOut();
-        }
-        unsubscribe();
-      });
-    } catch (error) {
-      //sign the out user
-      console.log(error);
-      this.props.signOut();
-    }
-  };
-  render() {
-    if (this.props.auth.isLoading) {
-      return <SplashScreen />;
-    }
-    return (
-      <NavigationContainer>
-        {!this.props.auth.isSignedIn ? (
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: colors.bgMain,
-              },
-              headerTintColor: "white",
-            }}
-          >
-            <Stack.Screen
-              name="WelcomeScreen"
-              options={{ headerShown: false }}
-              component={WelcomeScreen}
-            />
-            <Stack.Screen
-              name="LoginScreen"
-              options={{ headerBackTitleVisible: false }}
-              component={LoginScreen}
-            />
-          </Stack.Navigator>
-        ) : (
-          <ActionSheetProvider>
-            <AppDrawerNavigator />
-          </ActionSheetProvider>
-        )}
-      </NavigationContainer>
-    );
-  }
-}
 
 const HomeTabNavigator = () => (
   <Tab.Navigator
@@ -200,18 +177,3 @@ const AppDrawerNavigator = () => (
     />
   </Drawer.Navigator>
 );
-
-const mapStateToProps = (state) => {
-  return {
-    auth: state.auth,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    signIn: (user) => dispatch({ type: "SIGN_IN", payload: user }),
-    signOut: () => dispatch({ type: "SIGN_OUT" }),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BookWorm);

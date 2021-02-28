@@ -7,6 +7,7 @@ const initialState = {
 const auth = (state = initialState, action) => {
   switch (action.type) {
     case "SIGN_IN":
+      console.log("sign_in");
       return {
         ...state,
         isSignedIn: true,
@@ -14,6 +15,7 @@ const auth = (state = initialState, action) => {
         isLoading: false,
       };
     case "SIGN_OUT":
+      console.log("sign_out");
       return {
         ...state,
         isSignedIn: false,
