@@ -4,11 +4,13 @@ import CustomActionButton from "../../components/CustomActionButton";
 import colors from "../../assets/colors";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-export default class SettingsScreen extends Component {
+import { connect } from "react-redux";
+class SettingsScreen extends Component {
   signOut = async () => {
     try {
       await firebase.auth().signOut();
-      this.props.navigation.navigate("WelcomeScreen");
+      this.props.signOut();
+      // this.props.navigation.navigate("WelcomeScreen");
     } catch (error) {
       console.log(error);
       alert("Impossibile effettuare il logout");
@@ -33,6 +35,13 @@ export default class SettingsScreen extends Component {
     );
   }
 }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signOut: () => dispatch({ type: "SIGN_OUT" }),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(SettingsScreen);
 
 const styles = StyleSheet.create({
   container: {

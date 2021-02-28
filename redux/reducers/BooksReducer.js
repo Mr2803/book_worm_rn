@@ -87,7 +87,7 @@ const books = (state = initialState, action) => {
           return book;
         }),
       };
-      boo;
+
     default:
       return state;
   }

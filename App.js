@@ -22,6 +22,9 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import BooksCountContainer from "./redux/containers/BooksCountContainer";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import { LogBox } from "react-native";
+import BookWorm from "./BookWorm";
+LogBox.ignoreLogs(["Setting a timer"]);
 
 class App extends React.Component {
   constructor() {
@@ -36,9 +39,7 @@ class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <ActionSheetProvider>
-          <AppContainer />
-        </ActionSheetProvider>
+        <BookWorm />
       </Provider>
     );
   }

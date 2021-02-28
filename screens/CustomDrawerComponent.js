@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import colors from "../assets/colors";
 import { Ionicons } from "@expo/vector-icons";
-import { DrawerItems } from "react-navigation";
+// import { DrawerItems } from "react-navigation";
+import { DrawerItemList } from "@react-navigation/drawer";
 
 export default class CustomDrawerComponent extends Component {
   render() {
@@ -31,7 +32,7 @@ export default class CustomDrawerComponent extends Component {
             Book Worm
           </Text>
         </View>
-        <DrawerItems {...this.props} />
+        <DrawerItemList {...this.props} />
       </ScrollView>
     );
   }

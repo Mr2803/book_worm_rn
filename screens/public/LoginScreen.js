@@ -10,7 +10,9 @@ import colors from "../../assets/colors";
 import CustomActionButton from "../../components/CustomActionButton";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-export default class LoginScreen extends Component {
+import "firebase/database";
+import { connect } from "react-redux";
+class LoginScreen extends Component {
   constructor() {
     super();
     this.state = {
@@ -29,7 +31,8 @@ export default class LoginScreen extends Component {
           .signInWithEmailAndPassword(this.state.email, this.state.password);
         if (response) {
           this.setState({ isLoading: false });
-          this.props.navigation.navigate("LoadingScreen");
+          this.props.signIn(response.user);
+          // this.props.navigation.navigate("LoadingScreen");
           // this.props.navigation.navigate('LoadingScreen');
         }
       } catch (error) {
@@ -130,6 +133,14 @@ export default class LoginScreen extends Component {
     );
   }
 }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signIn: (user) => dispatch({ type: "SIGN_IN", payload: user }),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(LoginScreen);
 
 const styles = StyleSheet.create({
   container: {
