@@ -6,6 +6,7 @@ import SettingsScreen from "./screens/auth/SettingsScreen";
 import BooksReadingScreen from "./screens/auth/HomeTabNavigator/BooksReadingScreen";
 import BooksReadScreen from "./screens/auth/HomeTabNavigator/BooksReadScreen";
 import CustomDrawerComponent from "./screens/CustomDrawerComponent";
+import DetailScreen from "./screens/auth/DetailScreen";
 import colors from "./assets/colors";
 import SplashScreen from "./screens/public/SplashScreen";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,7 +23,7 @@ import useAuthenticateUser from "./hooks/useAuthenticateUser";
 export default function BookWormHook() {
   useAuthenticateUser();
   const auth = useSelector((state) => state.auth);
-  console.log(auth);
+  // console.log(auth);
 
   if (auth.isLoading) {
     return <SplashScreen />;
@@ -123,6 +124,10 @@ const getHeaderTitle = (route) => {
   }
 };
 
+const capitalize = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const HomeStackNavigator = ({ navigation }) => (
   <Stack.Navigator
     screenOptions={{
@@ -145,6 +150,13 @@ const HomeStackNavigator = ({ navigation }) => (
       })}
       name="HomeTabNavigator"
       component={HomeTabNavigator}
+    />
+    <Stack.Screen
+      options={({ route }) => ({
+        title: capitalize(route.params.bookData.name),
+      })}
+      name="DetailScreen"
+      component={DetailScreen}
     />
   </Stack.Navigator>
 );
