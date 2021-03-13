@@ -1,5 +1,4 @@
-import React, { Component, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React from "react";
 import WelcomeScreen from "./screens/public/WelcomeScreen";
 import HomeScreen from "./screens/auth/HomeScreen";
 import LoginScreen from "./screens/public/LoginScreen";
@@ -7,24 +6,17 @@ import SettingsScreen from "./screens/auth/SettingsScreen";
 import BooksReadingScreen from "./screens/auth/HomeTabNavigator/BooksReadingScreen";
 import BooksReadScreen from "./screens/auth/HomeTabNavigator/BooksReadScreen";
 import CustomDrawerComponent from "./screens/CustomDrawerComponent";
-import LoadingScreen from "./screens/public/LoadingScreen";
 import colors from "./assets/colors";
 import SplashScreen from "./screens/public/SplashScreen";
-
 import { Ionicons } from "@expo/vector-icons";
-import { firebaseConfig } from "./config/config";
-import * as firebase from "firebase/app";
 import "firebase/auth";
-import { Provider } from "react-redux";
-import store from "./redux/store";
 import BooksCountContainer from "./redux/containers/BooksCountContainer";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { LogBox } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import useAuthenticateUser from "./hooks/useAuthenticateUser";
 
 export default function BookWormHook() {

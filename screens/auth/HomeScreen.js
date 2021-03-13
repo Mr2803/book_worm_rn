@@ -24,6 +24,7 @@ import { connectActionSheet } from "@expo/react-native-action-sheet";
 import ListEmptyComponent from "../../components/ListEmptyComponent";
 import Swipeout from "react-native-swipeout";
 import * as ImageHelpers from "../../helpers/imageHelpers";
+import BookRow from "../../components/BookRow";
 
 class HomeScreen extends React.Component {
   constructor() {
@@ -67,14 +68,6 @@ class HomeScreen extends React.Component {
     this.props.toggleIsLoadingBooks(false);
     console.log(this.props.books);
   };
-
-  componentDidUpdate() {
-    console.log("update");
-  }
-
-  componentWillUnmount() {
-    console.log("unmount");
-  }
 
   showAddNewBook = () => {
     this.setState({ isAddNewBookVisible: true });
@@ -250,75 +243,6 @@ class HomeScreen extends React.Component {
     );
   };
 
-  renderItem = (item, index) => {
-    let swipeoutButtons = [
-      {
-        text: "Delete",
-        component: (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Ionicons name="ios-trash" size={24} color={colors.txtWhite} />
-          </View>
-        ),
-        backgroundColor: colors.bgDelete,
-        onPress: () => this.deleteBook(item, index),
-      },
-    ];
-
-    if (!item.read) {
-      swipeoutButtons.unshift({
-        text: "Mark as read",
-        component: (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text style={{ color: colors.txtWhite }}>Mark as read</Text>
-          </View>
-        ),
-        backgroundColor: colors.bgSuccessDark,
-        onPress: () => this.markAsRead(item, index),
-      });
-    } else {
-      swipeoutButtons.unshift({
-        text: "Mark unread",
-        component: (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text style={{ color: colors.txtWhite }}>Mark unread</Text>
-          </View>
-        ),
-        backgroundColor: colors.bgUnread,
-        onPress: () => this.markAsUnread(item, index),
-      });
-    }
-    return (
-      <Swipeout
-        backgroundColor={colors.bgMain}
-        right={swipeoutButtons}
-        autoClose={true}
-        style={{ marginHorizontal: 5, marginVertical: 5 }}
-      >
-        <ListItem
-          editable={true}
-          item={item}
-          marginVertical={0}
-          onPress={() => this.addBookImage(item)}
-        >
-          {item.read && (
-            <Ionicons
-              style={{ marginRight: 5 }}
-              name="ios-checkmark"
-              color={colors.logoColor}
-              size={30}
-            />
-          )}
-        </ListItem>
-      </Swipeout>
-    );
-  };
-
   render() {
     console.log("render");
     return (
@@ -375,7 +299,9 @@ class HomeScreen extends React.Component {
 
           <FlatList
             data={this.props.books.books}
-            renderItem={({ item }, index) => this.renderItem(item, index)}
+            renderItem={({ item }, index) => (
+              <BookRow item={item} index={index} />
+            )}
             keyExtractor={(item, index) => index.toString()}
             ListEmptyComponent={
               !this.props.books.isLoadingBooks && (
