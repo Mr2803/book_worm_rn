@@ -8,51 +8,38 @@ import {
   ActivityIndicator,
 } from "react-native";
 import colors from "../../../assets/colors";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import ListItem from "../../../components/ListItem";
 import ListEmptyComponent from "../../../components/ListEmptyComponent";
 
-class BooksReadScreen extends Component {
-  renderItem = (item) => {
-    return <ListItem item={item} />;
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        {this.props.books.isLoadingBooks && (
-          <View
-            style={{
-              ...StyleSheet.absoluteFill,
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
-              elevation: 1000,
-            }}
-          >
-            <ActivityIndicator size="large" color={colors.logoColor} />
-          </View>
-        )}
-        <FlatList
-          data={this.props.books.booksRead}
-          renderItem={({ item }, index) => this.renderItem(item, index)}
-          keyExtractor={(item, index) => index.toString()}
-          ListEmptyComponent={
-            !this.props.books.isLoadingBooks && (
-              <ListEmptyComponent text="No Books Read" />
-            )
-          }
-        />
-      </View>
-    );
-  }
+export default function BooksReadScreen() {
+  const { isLoadingBooks, booksRead } = useSelector((state) => state.books);
+  return (
+    <View style={styles.container}>
+      {isLoadingBooks && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFill,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            elevation: 1000,
+          }}
+        >
+          <ActivityIndicator size="large" color={colors.logoColor} />
+        </View>
+      )}
+      <FlatList
+        data={booksRead}
+        renderItem={({ item }, index) => <ListItem item={item} index={index} />}
+        keyExtractor={(item, index) => index.toString()}
+        ListEmptyComponent={
+          !isLoadingBooks && <ListEmptyComponent text="No Books Read" />
+        }
+      />
+    </View>
+  );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    books: state.books,
-  };
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -67,5 +54,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-export default connect(mapStateToProps)(BooksReadScreen);

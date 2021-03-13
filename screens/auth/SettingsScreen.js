@@ -4,44 +4,39 @@ import CustomActionButton from "../../components/CustomActionButton";
 import colors from "../../assets/colors";
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import { connect } from "react-redux";
-class SettingsScreen extends Component {
-  signOut = async () => {
+import { useDispatch } from "react-redux";
+import { signOut } from "../../redux/action";
+
+export default function SettingsScreen() {
+  const dispatch = useDispatch();
+  const handleSignOut = async () => {
     try {
       await firebase.auth().signOut();
-      this.props.signOut();
+      dispatch(signOut());
       // this.props.navigation.navigate("WelcomeScreen");
     } catch (error) {
       console.log(error);
       alert("Impossibile effettuare il logout");
     }
   };
-  render() {
-    return (
-      <View style={styles.container}>
-        <CustomActionButton
-          title="Sign Up"
-          onPress={this.signOut}
-          style={{
-            width: 200,
-            borderWidth: 0.5,
-            backgroundColor: "transparent",
-            borderColor: colors.bgError,
-          }}
-        >
-          <Text style={{ fontWeight: "100", color: "white" }}>Log out</Text>
-        </CustomActionButton>
-      </View>
-    );
-  }
-}
-const mapDispatchToProps = (dispatch) => {
-  return {
-    signOut: () => dispatch({ type: "SIGN_OUT" }),
-  };
-};
 
-export default connect(null, mapDispatchToProps)(SettingsScreen);
+  return (
+    <View style={styles.container}>
+      <CustomActionButton
+        title="Sign Up"
+        onPress={handleSignOut}
+        style={{
+          width: 200,
+          borderWidth: 0.5,
+          backgroundColor: "transparent",
+          borderColor: colors.bgError,
+        }}
+      >
+        <Text style={{ fontWeight: "100", color: "white" }}>Log out</Text>
+      </CustomActionButton>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
